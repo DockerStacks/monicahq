@@ -1,4 +1,4 @@
-FROM dockerstacks/php-fpm
+FROM dockerstacks/php-fpm:7.3
 LABEL maintainer="Naba Das(nabad600@gmail.com)"
 
 RUN apt-get update && apt-get install -y sudo \
