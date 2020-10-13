@@ -31,13 +31,13 @@ if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
     MONICADIR=/var/www/
     #Create an empty document root folder where Monica should be installed.
-    mkdir -p /var/www/monica
+    #mkdir -p /var/www/monica
     #Navigate to the document root folder.
-    cd /var/www/monica
+    cd /var/www/
     #Clone the Monica repository to it.
     git clone https://github.com/monicahq/monica.git .
     #Run the following to create your own version of the environment variables needed for the project.
-    cp /usr/local/bin/.env /var/www/monica/
+    cp /usr/local/bin/.env /var/www/
     #sed 's/127.0.0.1/mariadb/g' .env
     #sed 's/homestead/root/gI' .env
     #Install all packages.
@@ -50,8 +50,7 @@ if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     #Run the migrations and seed the database and symlink folders. 
     php artisan migrate
     #Change ownership of the /var/www/monica directory to www-data.
-    sudo chown -R www-data:www-data /var/www/monica
-
+    sudo chown -R www-data:www-data /var/www/
 fi
 echo "Thanks for using monica......................................................."
 
