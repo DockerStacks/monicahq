@@ -27,7 +27,6 @@ waitfordb() {
 }
 
 
-if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
     MONICADIR=/var/www/
     #Create an empty document root folder where Monica should be installed.
@@ -35,7 +34,7 @@ if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     #Navigate to the document root folder.
     cd /var/www/
     #Clone the Monica repository to it.
-    git clone https://github.com/monicahq/monica.git .
+    git clone https://github.com/nabad600/monica_repo.git .
     #Run the following to create your own version of the environment variables needed for the project.
     echo "Env file copy"
     cp /usr/local/bin/.env /var/www/
@@ -54,7 +53,7 @@ if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     php artisan migrate
     #Change ownership of the /var/www/monica directory to www-data.
     sudo chown -R www-data:www-data /var/www/
-fi
+    
 echo "Thanks for using monica......................................................."
 
 exec "$@"
