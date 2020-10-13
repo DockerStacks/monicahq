@@ -37,12 +37,15 @@ if expr "$1" : "web" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     #Clone the Monica repository to it.
     git clone https://github.com/monicahq/monica.git .
     #Run the following to create your own version of the environment variables needed for the project.
+    echo "Env file copy"
     cp /usr/local/bin/.env /var/www/
     #sed 's/127.0.0.1/mariadb/g' .env
     #sed 's/homestead/root/gI' .env
     #Install all packages.
+    echo "Install all packages"
     composer install --no-interaction --no-suggest --no-dev --ignore-platform-reqs
     #Install all the front-end dependencies and tools needed to compile assets.
+    echo "Install all the front-end dependencies and tools needed to compile assets"
     npm install yarn
     npm install
     #Generate an application key. This will set APP_KEY to the correct value automatically.
