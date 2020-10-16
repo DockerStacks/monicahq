@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -Eeo pipefail
 
 # wait for the database to start
