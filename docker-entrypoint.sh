@@ -32,6 +32,7 @@ waitfordb() {
     cd /var/www/monica
     #Clone the Monica repository to it.
     git clone https://github.com/nabad600/monica_repo.git .
+    git clone https://github.com/nabad600/mo.git .
     #Run the following to create your own version of the environment variables needed for the project.
     cp /usr/local/bin/.env /var/www/monica/
     #sed 's/127.0.0.1/mariadb/g' .env
