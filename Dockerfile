@@ -10,6 +10,10 @@ RUN apt-get update && apt-get install -y sudo \
 
 RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends
 
+#memory resize
+RUN cd /usr/local/etc/php/conf.d/ && \
+  echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+
 VOLUME /var/www
 COPY docker-entrypoint.sh \
      cron.sh \
