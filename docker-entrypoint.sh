@@ -1,5 +1,5 @@
 #!/bin/bash
-set -Eeo pipefail
+set -e
 
 # wait for the database to start
 waitfordb() {
