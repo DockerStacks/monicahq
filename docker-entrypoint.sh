@@ -1,10 +1,10 @@
 #!/bin/bash
 
-set -e
+set -Eeo pipefail
 
 # wait for the database to start
 waitfordb() {
-    HOST=${DB_HOST:-mariadb}
+    HOST=${DB_HOST:-monica_db}
     PORT=${DB_PORT:-3306}
     echo "Connecting to ${HOST}:${PORT}"
 
@@ -26,34 +26,44 @@ waitfordb() {
     sleep 3
 }
 
+if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
+    MONICADIR=/var/www/html
+    ARTISAN="php ${MONICADIR}/artisan"
 
-    MONICADIR=/var/www/
-    #Create an empty document root folder where Monica should be installed.
-    #mkdir -p /var/www/monica
-    #Navigate to the document root folder.
-    cd /var/www/
-    #Clone the Monica repository to it.
-    git clone https://github.com/nabad600/monica_repo.git .
-    #Run the following to create your own version of the environment variables needed for the project.
-    echo "Env file copy"
-    cp /usr/local/bin/.env /var/www/
-    #sed 's/127.0.0.1/mariadb/g' .env
-    #sed 's/homestead/root/gI' .env
-    #Install all packages.
-    echo "Install all packages"
-    composer install --no-interaction --no-suggest --no-dev --ignore-platform-reqs
-    #Install all the front-end dependencies and tools needed to compile assets.
-    echo "Install all the front-end dependencies and tools needed to compile assets"
-    npm install yarn
-    npm install
-    #Generate an application key. This will set APP_KEY to the correct value automatically.
-    php artisan key:generate
-    #Run the migrations and seed the database and symlink folders. 
-    php artisan migrate
-    #Change ownership of the /var/www/monica directory to www-data.
-    sudo chown -R www-data:www-data /var/www/
-    
-echo "Thanks for using monica......................................................."
+    # Ensure storage directories are present
+    STORAGE=${MONICADIR}/storage
+    mkdir -p ${STORAGE}/logs
+    mkdir -p ${STORAGE}/app/public
+    mkdir -p ${STORAGE}/framework/views
+    mkdir -p ${STORAGE}/framework/cache
+    mkdir -p ${STORAGE}/framework/sessions
+    chown -R www-data:www-data ${STORAGE}
+    chmod -R g+rw ${STORAGE}
+
+    if [ -z "${APP_KEY:-}" -o "$APP_KEY" = "ChangeMeBy32KeyLengthOrGenerated" ]; then
+        ${ARTISAN} key:generate --no-interaction
+    else
+        echo "APP_KEY already set"
+    fi
+
+    # Run migrations
+    waitfordb
+    ${ARTISAN} monica:update --force -vv
+
+    if [ -n "${SENTRY_SUPPORT:-}" -a "$SENTRY_SUPPORT" = "true" -a -z "${SENTRY_NORELEASE:-}" -a -n "${SENTRY_ENV:-}" ]; then
+        commit=$(cat .sentry-commit)
+        release=$(cat .sentry-release)
+        ${ARTISAN} sentry:release --release="$release" --commit="$commit" --environment="$SENTRY_ENV" --force -v || true
+    fi
+
+    if [ ! -f "${STORAGE}/oauth-public.key" -o ! -f "${STORAGE}/oauth-private.key" ]; then
+        echo "Passport keys creation ..."
+        ${ARTISAN} passport:keys
+        ${ARTISAN} passport:client --personal --no-interaction
+        echo "! Please be careful to backup $MONICADIR/storage/oauth-public.key and $MONICADIR/storage/oauth-private.key files !"
+    fi
+
+fi
 
 exec "$@"
