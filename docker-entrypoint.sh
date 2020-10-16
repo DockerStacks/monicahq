@@ -27,8 +27,8 @@ waitfordb() {
 
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
-    MONICADIR=/var/www/html
-    ARTISAN="php ${MONICADIR}/artisan"
+    MONICADIR=/var/www/monica
+    #ARTISAN="php ${MONICADIR}/artisan"
 
     # Ensure storage directories are present
     STORAGE=${MONICADIR}/storage
