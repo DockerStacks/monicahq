@@ -24,6 +24,8 @@ COPY docker-entrypoint.sh \
 #ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
 #ENTRYPOINT ["docker-entrypoint.sh"]
 #CMD ["run"]
+RUN composer global require hirak/prestissimo
+
 ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
 CMD ["php-fpm"]
 
